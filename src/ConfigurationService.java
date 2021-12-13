@@ -65,7 +65,7 @@ public class ConfigurationService {
 			configProperties.setProperty("signature", signStr);
 			configProperties.setProperty("iv", ivStr);
 			configProperties.setProperty("key", keyStr);
-			
+			configProperties.store(output, null);
 			output.flush();
 			output.close();
 		} catch (FileNotFoundException e) {

@@ -13,7 +13,7 @@ public class Configuration implements Serializable {
     
     public String SignatureAlgorithm;
     public int keySize;
-  //public String Algorithm;
+    public String Algorithm;
     public String AliasA;
     public String AliasB;
     public String KeyStore;
