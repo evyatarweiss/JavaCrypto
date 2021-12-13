@@ -1,0 +1,12 @@
+
+// creating 2 key stores. section A,B
+keytool -genkey -keyalg RSA -keysize 2048 -providername SunJCE -storetype JCEKS -alias efraim -keystore keystoreuser2.jks -storepass abcdefg -keypass abcdefg -dname "CN=efraim yosofov OU=idc O=idc L=il ST=il C=il"
+keytool -genkey -keyalg RSA -keysize 2048 -providername SunJCE -storetype JCEKS -alias evyatar -keystore keystoreuser1.jks -storepass abcdefg -keypass abcdefg -dname "CN=evyatar wiass OU=idc O=idc L=il ST=il C=il"
+
+// create 2 certificates
+keytool -export -alias efraim -sigalg SHA256withRSA -storetype JCEKS -keystore keystoreuser2.jks -file aliasB.cer -storepass abcdefg
+keytool -export -alias evyatar -sigalg SHA256withRSA -storetype JCEKS -keystore keystoreuser1.jks -file aliasA.cer -storepass abcdefg
+
+//importing to trusted certificates
+keytool -importcert -trustcacerts -file aliasA.cer -keystore keystoreuser2.jks -storepass abcdefg
+keytool -importcert -trustcacerts -file aliasB.cer -keystore keystoreuser1.jks -storepass abcdefg
