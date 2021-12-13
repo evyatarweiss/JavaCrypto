@@ -22,8 +22,9 @@ import javax.crypto.NoSuchPaddingException;
 public class EncryptorService {
 	
 	public static void main(String[] args) {
-		String keyPassword;
+		// the keypass and keystore are the same for this keystore type
 		String keyStorePassword = args[0];
+		String keyPassword = keyStorePassword;
 		String keyStorePath = args[1];
 		// relative paths
 		String fileToEncryptPath = "./plaintext.txt";

@@ -12,11 +12,11 @@ import javax.crypto.spec.IvParameterSpec;
 
 public class ConfigurationService {
 	private Properties configProperties;
-	private File file;
+	private File configurationFile;
 	private Configuration config;
 	
 	public ConfigurationService(File configFile) {
-		this.file = configFile;
+		this.configurationFile = configFile;
 		this.configProperties = new Properties();
 	}
 	
@@ -26,9 +26,9 @@ public class ConfigurationService {
 	
 	public void congfigurationLoader() {
 		FileInputStream input;
-		config = new Configuration();
+		this.config = new Configuration();
 		try {
-			input = new FileInputStream(this.file);
+			input = new FileInputStream(this.configurationFile);
 			try {
 				configProperties.load(input);
 				config.Algorithm = configProperties.getProperty("Algorithm");
@@ -58,7 +58,7 @@ public class ConfigurationService {
 	public void writeEncryptionDataToFile(IvParameterSpec iv, byte[] encryptedKey, byte[] signature) {
 		// TODO Auto-generated method stub
 		try {
-			FileOutputStream output = new FileOutputStream(this.file);
+			FileOutputStream output = new FileOutputStream(this.configurationFile);
 			String signStr = new String(Base64.getEncoder().encode(signature));
 			String ivStr = new String(Base64.getEncoder().encode(iv.getIV()));
 			String keyStr = new String(Base64.getEncoder().encode(encryptedKey));
@@ -75,6 +75,27 @@ public class ConfigurationService {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+
+	public void loadDecryptionData() {
+		// TODO Auto-generated method stub
+
+		try {
+			FileInputStream input = new FileInputStream(configurationFile);
+			configProperties.load(input);
+			config.key = configProperties.getProperty("key").getBytes();
+			config.Signature = configProperties.getProperty("signature").getBytes();
+			config.Iv = configProperties.getProperty("iv").getBytes();
+			
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
 	}
 	
 	
