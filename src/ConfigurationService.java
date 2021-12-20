@@ -83,9 +83,9 @@ public class ConfigurationService {
 		try {
 			FileInputStream input = new FileInputStream(configurationFile);
 			configProperties.load(input);
-			config.key = configProperties.getProperty("key").getBytes();
-			config.Signature = configProperties.getProperty("signature").getBytes();
-			config.Iv = configProperties.getProperty("iv").getBytes();
+			config.key = Base64.getDecoder().decode(configProperties.getProperty("key"));
+			config.Signature = Base64.getDecoder().decode(configProperties.getProperty("signature"));
+			config.Iv = Base64.getDecoder().decode(configProperties.getProperty("iv"));
 			
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block

@@ -1,12 +1,12 @@
 
 // creating 2 key stores. section A,B
-keytool -genkey -keyalg RSA -keysize 2048 -providername SunJCE -storetype JCEKS -alias efraim -keystore keystoreuser2.jks -storepass abcdefg -keypass abcdefg -dname "CN=efraim yosofov OU=idc O=idc L=il ST=il C=il"
-keytool -genkey -keyalg RSA -keysize 2048 -providername SunJCE -storetype JCEKS -alias evyatar -keystore keystoreuser1.jks -storepass abcdefg -keypass abcdefg -dname "CN=evyatar wiass OU=idc O=idc L=il ST=il C=il"
+keytool -genkey -keyalg RSA -keysize 2048 -providername SunJCE -storetype JCEKS -alias ClientA -keystore keystoreClientA.jks -storepass abcdefg -keypass 12345678 -dname "CN=efraim yosofov OU=idc O=idc L=il ST=il C=il"
+keytool -genkey -keyalg RSA -keysize 2048 -providername SunJCE -storetype JCEKS -alias ClientB -keystore keystoreClientB.jks -storepass abcdefg -keypass 12345678 -dname "CN=evyatar wiass OU=idc O=idc L=il ST=il C=il"
 
 // create 2 certificates
-keytool -export -alias efraim -sigalg SHA256withRSA -storetype JCEKS -keystore keystoreuser2.jks -file aliasB.cer -storepass abcdefg
-keytool -export -alias evyatar -sigalg SHA256withRSA -storetype JCEKS -keystore keystoreuser1.jks -file aliasA.cer -storepass abcdefg
+keytool -export -alias ClientA -sigalg SHA256withRSA -storetype JCEKS -keystore keystoreClientA.jks -file aliasA.cer -storepass abcdefg
+keytool -export -alias ClientB -sigalg SHA256withRSA -storetype JCEKS -keystore keystoreClientB.jks -file aliasB.cer -storepass abcdefg
 
 //importing to trusted certificates
-keytool -importcert -trustcacerts -file aliasA.cer -keystore keystoreuser2.jks -storepass abcdefg
-keytool -importcert -trustcacerts -file aliasB.cer -keystore keystoreuser1.jks -storepass abcdefg
+keytool -import -trustcacerts -alias ClientB -file aliasA.cer -keystore keystoreClientB.jks -storepass abcdefg -keypass 12345678
+keytool -import -trustcacerts -alias ClientA -file aliasB.cer -keystore keystoreClientA.jks -storepass abcdefg -keypass 12345678

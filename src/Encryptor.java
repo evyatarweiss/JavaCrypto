@@ -36,11 +36,11 @@ public class Encryptor {
 	}
 
 	public void writeKeyToConfigurationFile(byte[] key, Configuration config) {
-		config.key = java.util.Base64.getEncoder().encode(key);
+		config.key = key;
 	}
 	
 	public void writeSignatureToConfigurationFile(byte[] Signature, Configuration config) {
-		config.Signature = java.util.Base64.getEncoder().encode(Signature);
+		config.Signature = Signature;
 	}
 	
 	public byte[] EncryptKey(Configuration config, PublicKey publicKey) throws InvalidKeyException, NoSuchAlgorithmException, NoSuchProviderException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException {
@@ -61,7 +61,6 @@ public class Encryptor {
 		int i = cis.read(b);
 		while (i != -1) {
 			//encoding in base64
-			b = Base64.getEncoder().encode(b);
 			fos.write(b, 0, i);
 			i = cis.read(b);
 		}

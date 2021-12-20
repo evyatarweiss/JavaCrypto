@@ -3,6 +3,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
+import java.security.Key;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
@@ -10,6 +11,7 @@ import java.security.NoSuchProviderException;
 import java.security.PrivateKey;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
+import java.util.Base64;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
@@ -19,17 +21,16 @@ import javax.crypto.spec.IvParameterSpec;
 public class DecryptorService {
 
 	public static void main(String[] args) {
-		// the keypass and keystore pass are the same for this keystore
-		String keyStorePassword = args[1];
-		String keyPass = keyStorePassword;
+		String keyStorePassword = args[0];
+		String keyPass = args[1];
 		String keyStorePath = args[2];
 		// relative paths
-		String fileToEncryptPath = "./plaintext.txt";
+		String fileToDecryptToPath = "./DecryptedPlaintext.txt";
 		String encryptedFilePath = "./ciphertext.txt";
 		String configurationFilePath = "./config.properties";
 		// the files 
 	    File configFile = new File(configurationFilePath);
-		File plainTextFile = new File(fileToEncryptPath);
+		File plainTextFile = new File(fileToDecryptToPath);
 		File encryptedFile = new File(encryptedFilePath);
 		ConfigurationService configService = new ConfigurationService(configFile);
 		configService.congfigurationLoader();
@@ -38,8 +39,8 @@ public class DecryptorService {
 		KeyStore ks;
 		try {
 			ks = loadKeyStore(keyStorePath, keyStorePassword, config);
-			PrivateKey privateKey = (PrivateKey) ks.getKey(config.AliasB, keyPass.toCharArray());
-			SecretKey key = Decryptor.decryptKey(privateKey, config.key, config);
+			Key privateKey = ks.getKey(config.AliasB, keyPass.toCharArray());
+			SecretKey key = Decryptor.decryptKey(privateKey, config.key, config);	
 			Decryptor decrypt = new Decryptor((Configuration) config, key, new IvParameterSpec(config.Iv));
 			decrypt.decryptFile(encryptedFile, plainTextFile);
 		} catch (KeyStoreException | NoSuchAlgorithmException | CertificateException | IOException e) {
@@ -67,8 +68,6 @@ public class DecryptorService {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-		
 	}
 
 	private static KeyStore loadKeyStore(String keyStorePath, String password, Configuration config) throws KeyStoreException, NoSuchAlgorithmException, CertificateException, IOException {

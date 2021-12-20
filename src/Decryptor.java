@@ -9,6 +9,7 @@ import java.security.Key;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.PrivateKey;
+import java.util.Base64;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
@@ -27,24 +28,30 @@ public class Decryptor {
 		decryptCipher.init(Cipher.DECRYPT_MODE, key, iv);
 	}
 
-	public static SecretKey decryptKey(PrivateKey privateKey, byte[] encryptedKey, Configuration config) throws InvalidKeyException, NoSuchAlgorithmException, NoSuchProviderException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException {
+	public static SecretKey decryptKey(Key privateKey, byte[] encryptedKey, Configuration config) throws InvalidKeyException, NoSuchAlgorithmException, NoSuchProviderException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException {
 		// TODO Auto-generated method stub
 		Cipher cipherKey = Cipher.getInstance(config.keyEncryptionAlgorithm, config.keyEncryptionAlgorithmProvider);
 		cipherKey.init(Cipher.DECRYPT_MODE, privateKey);
-		byte[] keyArray = cipherKey.doFinal(encryptedKey);
-		SecretKey key = new SecretKeySpec(keyArray, config.Algorithm);
+		byte[] keyArray =cipherKey.doFinal(encryptedKey);
+		SecretKey key = new SecretKeySpec(keyArray,0 ,keyArray.length ,config.Algorithm.split("/")[0]);
 		return key;
 	}
 
 	public void decryptFile(File encryptedFile, File plainTextFile) throws IOException {
 		FileInputStream input = new FileInputStream(encryptedFile);
 		CipherInputStream cipherInput = new CipherInputStream(input, decryptCipher);
-		FileOutputStream output = new FileOutputStream(plainTextFile);
-		int index = cipherInput.read();
-		while (index != -1) {
-			output.write(index);
-			index = cipherInput.read();
-		}
+		FileOutputStream output = new FileOutputStream("./decryptedFile");
+
+		int bufferSize = 1;
+		byte[] buffer = new byte[bufferSize];
+	    int dataRead = input.read(buffer);
+	
+	    while (dataRead != -1) {
+	
+	    	output.write(buffer, 0, dataRead);
+	        dataRead = input.read(buffer);
+	    }
+
 		cipherInput.close();
 		output.flush();
 		output.close();

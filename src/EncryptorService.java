@@ -22,10 +22,9 @@ import javax.crypto.NoSuchPaddingException;
 public class EncryptorService {
 	
 	public static void main(String[] args) {
-		// the keypass and keystore are the same for this keystore type
 		String keyStorePassword = args[0];
-		String keyPassword = keyStorePassword;
-		String keyStorePath = args[1];
+		String keyPassword = args[1];
+		String keyStorePath = args[2];
 		// relative paths
 		String fileToEncryptPath = "./plaintext.txt";
 		String encryptedFilePath = "./ciphertext.txt";
@@ -34,20 +33,19 @@ public class EncryptorService {
 	    File configFile = new File(configurationFilePath);
 		File plainTextFile = new File(fileToEncryptPath);
 		File encryptedFile = new File(encryptedFilePath);
-		System.out.println(configFile.getAbsolutePath());
 		
 		ConfigurationService configSevrice = new ConfigurationService(configFile);
 		configSevrice.congfigurationLoader();
 		Configuration config = configSevrice.getConfig();
 		try {
 			KeyStore ks = loadKeyStore(keyStorePath, keyStorePassword, config);
+			PrivateKey privateKey = (PrivateKey)(ks.getKey(config.AliasA, keyPassword.toCharArray()));
+			byte[] signature = SignatureChecker.SignFile(privateKey, encryptedFile.getAbsolutePath(), config);
 			Encryptor encrypt = new Encryptor(config);
 			encrypt.EncryptFile(plainTextFile.getAbsolutePath(), encryptedFile.getAbsolutePath());
-			Certificate aliasBCert = ks.getCertificate(config.AliasA);
+			Certificate aliasBCert = ks.getCertificate(config.AliasB);
 			PublicKey publicKey = aliasBCert.getPublicKey();
 			byte[] encryptedKey = encrypt.EncryptKey(config, publicKey);
-			PrivateKey privateKey = (PrivateKey)(ks.getKey(config.AliasA, keyStorePassword.toCharArray()));
-			byte[] signature = SignatureChecker.SignFile(privateKey, encryptedFile.getAbsolutePath(), config);
 			configSevrice.writeEncryptionDataToFile(encrypt.getIV(), encryptedKey, signature);
 			
 		} catch (KeyStoreException | NoSuchAlgorithmException | CertificateException | IOException e) {
@@ -72,10 +70,10 @@ public class EncryptorService {
 		
 	}
 	
-	private static KeyStore loadKeyStore(String keyStorePath, String password, Configuration config) throws KeyStoreException, NoSuchAlgorithmException, CertificateException, IOException {
+	private static KeyStore loadKeyStore(String keyStorePath, String keyStorePassword, Configuration config) throws KeyStoreException, NoSuchAlgorithmException, CertificateException, IOException {
 		KeyStore keyStore = KeyStore.getInstance(config.keyStoreType);
 		FileInputStream input = new FileInputStream(keyStorePath); 
-		keyStore.load(input, password.toCharArray());
+		keyStore.load(input, keyStorePassword.toCharArray());
 		return keyStore;
 	}
 	
