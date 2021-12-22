@@ -41,7 +41,7 @@ public class Decryptor {
 		FileInputStream input = new FileInputStream(encryptedFile);
 		CipherInputStream cipherInput = new CipherInputStream(input, decryptCipher);
 		FileOutputStream output = new FileOutputStream("./decryptedFile");
-
+		
 		int bufferSize = 1;
 		byte[] buffer = new byte[bufferSize];
 	    int dataRead = input.read(buffer);
@@ -51,7 +51,7 @@ public class Decryptor {
 	    	output.write(buffer, 0, dataRead);
 	        dataRead = input.read(buffer);
 	    }
-
+	    
 		cipherInput.close();
 		output.flush();
 		output.close();

@@ -9,6 +9,8 @@ import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.PrivateKey;
+import java.security.PublicKey;
+import java.security.SignatureException;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
 import java.util.Base64;
@@ -43,6 +45,12 @@ public class DecryptorService {
 			SecretKey key = Decryptor.decryptKey(privateKey, config.key, config);	
 			Decryptor decrypt = new Decryptor((Configuration) config, key, new IvParameterSpec(config.Iv));
 			decrypt.decryptFile(encryptedFile, plainTextFile);
+			
+			PublicKey publicKey = ks.getCertificate(config.AliasA).getPublicKey();
+			boolean validSignature = SignatureChecker.checkFileSignature(publicKey, fileToDecryptToPath, config);
+			if (!validSignature) {
+				System.out.println("not valid signature");
+			}
 		} catch (KeyStoreException | NoSuchAlgorithmException | CertificateException | IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -65,6 +73,9 @@ public class DecryptorService {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (BadPaddingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SignatureException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
