@@ -1,15 +1,24 @@
 
 import javax.crypto.spec.IvParameterSpec;
 
-public class IV {
+import javax.crypto.spec.IvParameterSpec;
+import java.security.Key;
 
-	private IvParameterSpec iv;
-	
-	public IV(IvParameterSpec inputIV) {
-		this.iv = inputIV;
-	}
-	
+public class IV{
 	public IvParameterSpec getIvParameterSpec() {
-		return this.iv;
+		return ivParameterSpec;
 	}
+
+	public Key getKey() {
+		return key;
+	}
+
+	public IV(IvParameterSpec ivParameterSpec, Key key) {
+		this.ivParameterSpec = ivParameterSpec;
+		this.key = key;
+	}
+
+	IvParameterSpec ivParameterSpec;
+	Key key;
 }
+

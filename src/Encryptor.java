@@ -24,15 +24,19 @@ public class Encryptor {
 	// algorithm, provider, IV, keystore
 	
 	private Cipher encryptionCipher;
-	private SecretKey key;
 	private KeyGenerator keyGenerator;
-	private IV iv;
 	
-	public Encryptor(Configuration config) throws NoSuchAlgorithmException, NoSuchProviderException, NoSuchPaddingException, InvalidKeyException, InvalidAlgorithmParameterException {
+	public IV InitEncryptor(Configuration config) throws NoSuchAlgorithmException, NoSuchProviderException, NoSuchPaddingException, InvalidKeyException, InvalidAlgorithmParameterException {
 		encryptionCipher = Cipher.getInstance(config.Algorithm, config.AlgorithmProvider);
+		SecureRandom randomSecureRandom = new SecureRandom();
+		byte[] iv = new byte[cipher.getBlockSize()];
+		randomSecureRandom.nextBytes(iv);
+		IvParameterSpec ivParams = new IvParameterSpec(iv);
+
 		keyGenerator = KeyGenerator.getInstance(config.Algorithm.split("/")[0]);
-		key = keyGenerator.generateKey();
+		Key key = keyGenerator.generateKey();
 		encryptionCipher.init(Cipher.ENCRYPT_MODE, key, getRandomIV(config));
+		return new IV(ivParams,key);
 	}
 
 	public void writeKeyToConfigurationFile(byte[] key, Configuration config) {

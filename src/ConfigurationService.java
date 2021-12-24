@@ -7,8 +7,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Base64;
 import java.util.Properties;
-
 import javax.crypto.spec.IvParameterSpec;
+
+// Configuration service its an object that contains ..->
+// properties that will be loaded from an external file name Configuration.properties
+// in roder to provide an Algorithm extensibility etc
 
 public class ConfigurationService {
 	private Properties configProperties;
