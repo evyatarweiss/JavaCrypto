@@ -1,18 +1,11 @@
 
-
+import java.io.*;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.security.InvalidAlgorithmParameterException;
-import java.security.InvalidKeyException;
-import java.security.KeyStore;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
-import java.security.PrivateKey;
-import java.security.PublicKey;
-import java.security.Security;
+import java.security.*;
+import java.security.Security.*;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 
@@ -20,7 +13,6 @@ import javax.crypto.NoSuchPaddingException;
 
 
 public class EncryptorService {
-
 
 
 	public static void main(String[] args) {
@@ -32,7 +24,7 @@ public class EncryptorService {
 		String encryptedFilePath = "./ciphertext.txt";
 		String configurationFilePath = "./config.properties";
 		// the files
-	    File configFile = new File(configurationFilePath);
+		File configFile = new File(configurationFilePath);
 		File plainTextFile = new File(fileToEncryptPath);
 		File encryptedFile = new File(encryptedFilePath);
 		//Loading the properties from the file into the configuration Object
@@ -46,19 +38,29 @@ public class EncryptorService {
 			//were loading the keystore of clientB in order to pull his public key and to sign our data.
 			KeyStore ks = loadKeyStore(keyStorePath, keyStorePassword, config);
 
-			Encryptor encrypt = new Encryptor(config);
+			//creating a new encryptor object
+			Encryptor encrypt = new Encryptor();
+
+			//The Cipher initialized using the AES algorithm in CTR mode while using random IV
 			IV Iv = encrypt.InitEncryptor(config);
+
+			//Encrypt the plainText
 			encrypt.EncryptFile(plainTextFile.getAbsolutePath(), encryptedFile.getAbsolutePath());
 
-			//signing on the encrypted text
+			//Signing on the encrypted text with ClientA private key
 			byte[] signature = signFile(encryptedFile.getAbsolutePath(), keyPassword, config, ks);
 
-			//encrypt the symetric Key
+			//Get the public key of ClientB
 			Certificate aliasBCert = ks.getCertificate(config.AliasB);
 			PublicKey publicKey = aliasBCert.getPublicKey();
-			byte[] encryptedKey = encrypt.EncryptKey(config, publicKey);
-			configSevrice.writeEncryptionDataToFile(encrypt.getIV(), encryptedKey, signature);
-			
+
+			//Encrypt the symmetric key using ClientB public key
+			byte[] encryptedKey = encrypt.EncryptKey(Iv.getKey(), config, publicKey);
+
+			//The encrypted key as well as additional parameters will be saved in the config file
+			//Also the digital signature of the encrypted file
+			configSevrice.writeEncryptionDataToFile(Iv.ivParameterSpec, encryptedKey, signature);
+
 		} catch (KeyStoreException | NoSuchAlgorithmException | CertificateException | IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -78,17 +80,20 @@ public class EncryptorService {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 	}
 
 	//Loading keystore
 	private static KeyStore loadKeyStore(String keyStorePath, String keyStorePassword, Configuration config) throws KeyStoreException, NoSuchAlgorithmException, CertificateException, IOException {
 		KeyStore keyStore = KeyStore.getInstance(config.keyStoreType);
-		FileInputStream input = new FileInputStream(keyStorePath); 
+		FileInputStream input = new FileInputStream(keyStorePath);
 		keyStore.load(input, keyStorePassword.toCharArray());
 		return keyStore;
 	}
-	private static byte[] signFile(String encryptedFile, String keyPassword, ConfigurationData config, KeyStore ks) throws KeyStoreException, NoSuchAlgorithmException, UnrecoverableKeyException, IOException, NoSuchProviderException, InvalidKeyException, SignatureException {
-		PrivateKey privateKey = (PrivateKey)(ks.getKey(config.AliasA, keyPassword.toCharArray()));
-		return SignatureManager.signFile(privateKey, encryptedFile, config);
+
+	private static byte[] signFile(String encryptedFile, String keyPassword, Configuration config, KeyStore ks) throws KeyStoreException, NoSuchAlgorithmException, IOException, NoSuchProviderException, InvalidKeyException, UnrecoverableKeyException, SignatureException {
+		PrivateKey privateKey = (PrivateKey) (ks.getKey(config.AliasA, keyPassword.toCharArray()));
+		byte[] signature = SignatureChecker.SignFile(privateKey, encryptedFile, config);
+		return signature;
 	}
+}
