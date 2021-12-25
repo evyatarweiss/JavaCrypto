@@ -1,15 +1,11 @@
 
-import java.io.*;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.security.*;
-import java.security.Security.*;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 
-import javax.crypto.NoSuchPaddingException;
 
 
 public class EncryptorService {
@@ -20,18 +16,21 @@ public class EncryptorService {
 		String keyPassword = args[1];
 		String keyStorePath = args[2];
 		// relative paths
+		
 		String fileToEncryptPath = "./plaintext.txt";
 		String encryptedFilePath = "./ciphertext.txt";
 		String configurationFilePath = "./config.properties";
+
 		// the files
 		File configFile = new File(configurationFilePath);
 		File plainTextFile = new File(fileToEncryptPath);
 		File encryptedFile = new File(encryptedFilePath);
+
 		//Loading the properties from the file into the configuration Object
-		//Were assuming that the properties file are in the right scheme.
-		ConfigurationService configSevrice = new ConfigurationService(configFile);
-		configSevrice.congfigurationLoader();
-		Configuration config = configSevrice.getConfig();
+		//We're assuming that the properties file are in the right scheme.
+		ConfigurationService configService = new ConfigurationService(configFile);
+		configService.congfigurationLoader();
+		Configuration config = configService.getConfig();
 
 		try {
 			//If the communication goes from ClientA --> ClientB
@@ -59,23 +58,11 @@ public class EncryptorService {
 
 			//The encrypted key as well as additional parameters will be saved in the config file
 			//Also the digital signature of the encrypted file
-			configSevrice.writeEncryptionDataToFile(Iv.ivParameterSpec, encryptedKey, signature);
+			configService.writeEncryptionDataToFile(Iv.ivParameterSpec, encryptedKey, signature);
 
-		} catch (KeyStoreException | NoSuchAlgorithmException | CertificateException | IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (InvalidKeyException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (NoSuchProviderException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (NoSuchPaddingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (InvalidAlgorithmParameterException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			//Printing for validation
+			System.out.println("file was encrypted successfully");
+
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -93,7 +80,6 @@ public class EncryptorService {
 
 	private static byte[] signFile(String encryptedFile, String keyPassword, Configuration config, KeyStore ks) throws KeyStoreException, NoSuchAlgorithmException, IOException, NoSuchProviderException, InvalidKeyException, UnrecoverableKeyException, SignatureException {
 		PrivateKey privateKey = (PrivateKey) (ks.getKey(config.AliasA, keyPassword.toCharArray()));
-		byte[] signature = SignatureChecker.SignFile(privateKey, encryptedFile, config);
-		return signature;
+		return SignatureChecker.SignFile(privateKey, encryptedFile, config);
 	}
 }
