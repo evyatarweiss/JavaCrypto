@@ -3,10 +3,10 @@
   <component name="ChangeListManager">
     <list default="true" id="16482958-afa8-4284-94bb-5780702fd3f9" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ConfigurationService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/ConfigurationService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Encryptor.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Encryptor.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/classes/production/Encryption-Decryption/DecryptorService.class" beforeDir="false" afterPath="$PROJECT_DIR$/classes/production/Encryption-Decryption/DecryptorService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/DecryptorService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/DecryptorService.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/EncryptorService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/EncryptorService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/IV.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/IV.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/SignatureChecker.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/SignatureChecker.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -19,6 +19,9 @@
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
   </component>
+  <component name="ProblemsViewState">
+    <option name="selectedTabId" value="CurrentFile" />
+  </component>
   <component name="ProjectId" id="22dU3XkAi6PNtabo07IzkS44Pw1" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
@@ -27,12 +30,13 @@
   <component name="PropertiesComponent">
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="nodejs_package_manager_path" value="npm" />
-    <property name="project.structure.last.edited" value="Modules" />
-    <property name="project.structure.proportion" value="0.0" />
-    <property name="project.structure.side.proportion" value="0.0" />
+    <property name="project.structure.last.edited" value="Project" />
+    <property name="project.structure.proportion" value="0.15" />
+    <property name="project.structure.side.proportion" value="0.2" />
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
@@ -44,7 +48,8 @@
       <updated>1640166758411</updated>
       <workItem from="1640166760692" duration="47000" />
       <workItem from="1640166830631" duration="620000" />
-      <workItem from="1640364491017" duration="6066000" />
+      <workItem from="1640364491017" duration="9878000" />
+      <workItem from="1640420082217" duration="4780000" />
     </task>
     <servers />
   </component>
@@ -61,16 +66,5 @@
         </entry>
       </map>
     </option>
-  </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/EncryptorService.java</url>
-          <line>32</line>
-          <option name="timeStamp" value="1" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
   </component>
 </project>

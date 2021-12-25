@@ -23,7 +23,7 @@ public class SignatureChecker {
 	
 	public static boolean checkFileSignature(PublicKey key, String filePath, Configuration config) throws InvalidKeyException, NoSuchAlgorithmException, NoSuchProviderException, SignatureException, IOException {
 		byte[] currentSignature = config.Signature;
-		Signature fileSignature = Signature.getInstance(config.SignatureAlgorithm, config.signatureAlgorithmProvider);;
+		Signature fileSignature = Signature.getInstance(config.SignatureAlgorithm, config.signatureAlgorithmProvider);
 		fileSignature.initVerify(key);
 		FileInputStream input = new FileInputStream(filePath);
 		fileSignature.update(input.readAllBytes());

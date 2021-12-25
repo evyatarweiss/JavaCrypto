@@ -8,18 +8,17 @@ import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
-import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.SignatureException;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
-import java.util.Base64;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
+
 public class DecryptorService {
 
 	public static void main(String[] args) {
@@ -27,55 +26,44 @@ public class DecryptorService {
 		String keyPass = args[1];
 		String keyStorePath = args[2];
 		// relative paths
+
 		String fileToDecryptToPath = "./DecryptedPlaintext.txt";
 		String encryptedFilePath = "./ciphertext.txt";
 		String configurationFilePath = "./config.properties";
+
 		// the files 
 	    File configFile = new File(configurationFilePath);
 		File plainTextFile = new File(fileToDecryptToPath);
 		File encryptedFile = new File(encryptedFilePath);
+
 		ConfigurationService configService = new ConfigurationService(configFile);
 		configService.congfigurationLoader();
 		configService.loadDecryptionData();
 		Configuration config = configService.getConfig();
 		KeyStore ks;
+
 		try {
+			//Loading clientB keystore in order to pull PrivateKey
 			ks = loadKeyStore(keyStorePath, keyStorePassword, config);
 			Key privateKey = ks.getKey(config.AliasB, keyPass.toCharArray());
-			SecretKey key = Decryptor.decryptKey(privateKey, config.key, config);	
-			Decryptor decrypt = new Decryptor((Configuration) config, key, new IvParameterSpec(config.Iv));
+
+			//Decrypt symmetric key using ClientB private key
+			SecretKey SymmetricKey = Decryptor.decryptKey(privateKey, config.key, config);
+
+			//Decrypt Cipher using Symmetric Key
+			Decryptor decrypt = new Decryptor(config, SymmetricKey, new IvParameterSpec(config.Iv));
 			decrypt.decryptFile(encryptedFile, plainTextFile);
-			
+
+			//validation of signature
 			PublicKey publicKey = ks.getCertificate(config.AliasA).getPublicKey();
 			boolean validSignature = SignatureChecker.checkFileSignature(publicKey, fileToDecryptToPath, config);
 			if (!validSignature) {
 				System.out.println("not valid signature");
 			}
-		} catch (KeyStoreException | NoSuchAlgorithmException | CertificateException | IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (UnrecoverableKeyException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (InvalidKeyException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (NoSuchProviderException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (NoSuchPaddingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (InvalidAlgorithmParameterException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IllegalBlockSizeException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (BadPaddingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (SignatureException e) {
+
+			System.out.println("file was decrypted successfully and signature is valid");
+
+		} catch (KeyStoreException | NoSuchAlgorithmException | CertificateException | IOException | UnrecoverableKeyException | InvalidKeyException | NoSuchProviderException | NoSuchPaddingException | InvalidAlgorithmParameterException | IllegalBlockSizeException | BadPaddingException | SignatureException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}

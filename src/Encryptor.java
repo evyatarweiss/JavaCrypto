@@ -29,38 +29,30 @@ public class Encryptor {
 	public IV InitEncryptor(Configuration config) throws NoSuchAlgorithmException, NoSuchProviderException, NoSuchPaddingException, InvalidKeyException, InvalidAlgorithmParameterException {
 		encryptionCipher = Cipher.getInstance(config.Algorithm, config.AlgorithmProvider);
 		SecureRandom randomSecureRandom = new SecureRandom();
-		byte[] iv = new byte[cipher.getBlockSize()];
+		byte[] iv = new byte[encryptionCipher.getBlockSize()];
 		randomSecureRandom.nextBytes(iv);
 		IvParameterSpec ivParams = new IvParameterSpec(iv);
 
 		keyGenerator = KeyGenerator.getInstance(config.Algorithm.split("/")[0]);
 		Key key = keyGenerator.generateKey();
-		encryptionCipher.init(Cipher.ENCRYPT_MODE, key, getRandomIV(config));
+		encryptionCipher.init(Cipher.ENCRYPT_MODE, key, ivParams);
 		return new IV(ivParams,key);
 	}
 
-	public void writeKeyToConfigurationFile(byte[] key, Configuration config) {
-		config.key = key;
-	}
-	
-	public void writeSignatureToConfigurationFile(byte[] Signature, Configuration config) {
-		config.Signature = Signature;
-	}
-	
-	public byte[] EncryptKey(Configuration config, PublicKey publicKey) throws InvalidKeyException, NoSuchAlgorithmException, NoSuchProviderException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException {
+	public byte[] EncryptKey(Key keyToEncrypt, Configuration config, PublicKey publicKey) throws InvalidKeyException, NoSuchAlgorithmException, NoSuchProviderException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException {
 		Cipher cipher = Cipher.getInstance(config.keyEncryptionAlgorithm, config.keyEncryptionAlgorithmProvider);
 		cipher.init(Cipher.ENCRYPT_MODE, publicKey);
-		byte[] cipherKey = cipher.doFinal(this.key.getEncoded());
+		byte[] cipherKey = cipher.doFinal(keyToEncrypt.getEncoded());
 		return cipherKey;
 	}
 	
-	public void EncryptFile(String fileLocation, String encriptedFileLocation) throws Exception {
+	public void EncryptFile(String fileLocation, String encryptedFileLocation) throws Exception {
 		FileInputStream fis;
 		FileOutputStream fos;
 		CipherInputStream cis;
 		fis = new FileInputStream(fileLocation);
 		cis = new CipherInputStream(fis, encryptionCipher);
-		fos = new FileOutputStream(encriptedFileLocation);
+		fos = new FileOutputStream(encryptedFileLocation);
 		byte[] b = new byte[8];
 		int i = cis.read(b);
 		while (i != -1) {
@@ -71,16 +63,5 @@ public class Encryptor {
 		cis.close();
 		fos.close();
 	}
-	
-	private IvParameterSpec getRandomIV(Configuration config) throws NoSuchAlgorithmException, NoSuchProviderException, NoSuchPaddingException {
-		SecureRandom random = new SecureRandom();
-		byte[] iv = new byte[encryptionCipher.getBlockSize()];
-	    new SecureRandom().nextBytes(iv);
-	    this.iv = new IV(new IvParameterSpec(iv));
-	    return this.iv.getIvParameterSpec();
-	}
-	
-	public IvParameterSpec getIV() {
-		return this.iv.getIvParameterSpec();
-	}
+
 }
